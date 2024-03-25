@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <script src="js/render.js" defer></script>
+        <script src="js/field.js" defer></script>
+        <script src="js/game.js" defer></script>
+        <script src="js/main.js" defer></script>
+        <link rel="stylesheet" href="css/main.css">
+        <title>
+            GoL
+        </title>
+    </head>
+    <body>
+        <div class="row-container">
+            <div id="control-panel">
+                <h1>Game of Life</h1>
+                <div id="size-input-container">
+                    <label>X size</label>
+                    <input id="x-size-input" class="size-input" />
+                    <label>Y size</label>
+                    <input id="y-size-input" class="size-input" />
+                    <button id="btn-apply-size">Apply</button>
+                </div>
+                <div id="map-panel">
+                    <div id="scrollable-map-panel"></div>
+                </div>
+                <div id="random-panel">
+                    <label id="random-probability-label">Random probability</label>
+                    <input id="random-input" type="range" min="0" max="100" value="0" />
+                    <button id="btn-generate-random">Generate</button>
+                </div>
+                <div id="start-panel">
+                    <label id="delay-label"></label>
+                    <input id="delay-input" type="range" min="0" max="1000" value="0" />
+                    <div id="game-btn-panel">
+                        <button id="btn-start-step">Step</button>
+                        <button id="btn-start-game">Start</button>
+                    </div>
+                </div>
+                <div id="log-panel"></div>
+            </div>
+            <canvas id="webgl-canvas"></canvas>
+        </div>
+    </body>
+</html>
