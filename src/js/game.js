@@ -1,11 +1,11 @@
-var delayedIterate = async (field, delay, onCalculate) => {
+var delayedIterate = async (field, delay, onCalculate, rerender) => {
     var start = Date.now();
-    await new Promise((resolve, _) => setTimeout(() => resolve(iterate(field)), delay));
+    await new Promise((resolve, _) => setTimeout(() => resolve(iterate(field, rerender)), delay));
     var end = Date.now();
     onCalculate(end - start);
 }
 
-var iterate = (field) => {
+var iterate = (field, rerender) => {
     field.clearModified();
     var firstRow = [...field.getRow(0)];
     var currentRow = [...field.getRow(0)];
@@ -41,16 +41,17 @@ var iterate = (field) => {
             currentRow = [...field.getRow(curIndex)];
         }
     }
+    rerender()
 }
 
-var game = (field, delay, onCalculate, onGameEnd) => {
+var game = (field, delay, onCalculate, onGameEnd, rerender) => {
     var doNext = true;
-    var doGame = () => {
+    var doGame = async () => {
         if (!field.isModified()){
             onGameEnd();
         }
         if (doNext && field.isModified()){
-            delayedIterate(field, delay, onCalculate).then(doGame);
+            delayedIterate(field, delay, onCalculate, rerender).then(doGame);
         }
     }
     doGame();

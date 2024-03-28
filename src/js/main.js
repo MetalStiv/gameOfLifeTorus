@@ -1,11 +1,14 @@
 const canvas = document.getElementById("webgl-canvas");
+canvas.width = 1080;
+canvas.height = 720;
 const gl = canvas.getContext("webgl2");
 
+var isDrawable = true;
 if (gl === null) {
     console.error("Unable to initialize WebGL. Your browser or machine may not support it.");
 }
 else{
-    initScene();
+    initScene(false);
 }
 
 var xLen = 0;
@@ -15,6 +18,7 @@ var gameState = 0;
 var stopGame;
 
 var field = new Field();
+var rerender;
 
 var xSizeInput = document.querySelector('#x-size-input');
 xSizeInput.onkeydown = (event) => {
@@ -34,13 +38,14 @@ ySizeInput.onkeydown = (event) => {
 
 var mapPanel = document.querySelector('#scrollable-map-panel');
 
-document.querySelector('#btn-apply-size').addEventListener('click', () => {
+document.querySelector('#btn-apply-size').addEventListener('click', async () => {
     while(mapPanel.firstElementChild) {
         mapPanel.firstElementChild.remove();
     }
     xLen = parseInt(document.querySelector('#x-size-input').value);
     yLen = parseInt(document.querySelector('#y-size-input').value);
     field.resize(xLen, yLen);
+    rerender = await initScene(field);
     iterationNumber = 1;
     document.querySelector('#log-panel').textContent = '';
     for(let i = 0; i < yLen; i++){
@@ -100,7 +105,6 @@ var handleIteration = (time) => {
             document.querySelector('#cb_' + i + '_' + j).checked = field.getCellData(i, j);
         }
     }
-    //rerender()
 }
 
 var handleGameEnd = () => {
@@ -109,20 +113,20 @@ var handleGameEnd = () => {
     addToLog(`Game completed in ${iterationNumber-1} iterations! Alive: ${field.getAliveCounter()}`);
 }
 
-document.querySelector('#btn-start-step').addEventListener('click', () => {
+document.querySelector('#btn-start-step').addEventListener('click', async () => {
     if (!field.isModified()){
         handleGameEnd();
     }
     else{
-        delayedIterate(field, delay, handleIteration);
+        delayedIterate(field, delay, handleIteration, () => rerender());
     }
 });
 
-document.querySelector('#btn-start-game').addEventListener('click', () => {
+document.querySelector('#btn-start-game').addEventListener('click', async () => {
     if (gameState === 0){
         document.querySelector('#btn-start-game').innerHTML = 'Stop';
         gameState = 1;
-        stopGame = game(field, delay, handleIteration, handleGameEnd);
+        stopGame = game(field, delay, handleIteration, handleGameEnd, () => rerender());
         return;
     }
     if (gameState === 1){
